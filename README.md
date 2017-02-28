@@ -45,7 +45,21 @@ The color is converted into HSV ( Hue Saturation Value) to detect colors.
 The lego train is recomposed from color in ima5.png
 The code is mocked to do tests without the ev3.
 
+Android version
+With Android Studio :
+Import the gradle project
+Add OpenCV module in the project : http://stackoverflow.com/questions/27406303/opencv-in-android-studio
+Add module dependency
+Change sdk version of opencv module 
+android {
+    compileSdkVersion 21
+    buildToolsVersion "23.0.2"
 
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 21
+    }
+[...]
 
 
 
