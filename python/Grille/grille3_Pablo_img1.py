@@ -1,8 +1,6 @@
 import cv2
 import numpy as np
 
-#Isabelle?, Jessica,  Pablo, Raph, Alexandre, Sam, Herve, Sylvain, Philippe, Landry, Henri
-
 def nothing(x):
     pass 
 
@@ -53,8 +51,8 @@ def detectColor(b, g, r):
 	return col
 
 
-img = cv2.imread('step3.jpg', 1)
-imgorig = cv2.imread('step3.jpg', 1)
+img = cv2.imread('Pablo_step1.png', 1)
+imgorig = cv2.imread('pstep3.png', 1)
 #img = cv2.imread('5TTQ7iv.jpg', 1)
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -71,16 +69,20 @@ width = np.size(img, 1)
 #diviser en grille 924/602
 #32/32 ?
 xmin=0
-xmax=924
-ymin=58
-ymax=602
+xmax=92
+ymin=106
+ymax=538
 cv2.line(img,(xmin,ymin),(xmax,ymin),(255,0,0),1)
 cv2.line(img,(xmax,ymin),(xmax,ymax),(255,0,0),1)
 cv2.line(img,(xmax,ymax),(xmin,ymax),(255,0,0),1)
 cv2.line(img,(xmin,ymax),(xmin,ymin),(255,0,0),1)
 
-nbx=54
-nby=32
+#nbx=6
+#nby=35
+
+nbx=5
+nby=5
+
 
 dx=float(xmax-xmin)/float(nbx)
 dy=float(ymax-ymin)/float(nby)
@@ -97,8 +99,8 @@ im2lx=xmax-xmin
 im2ly=ymax-ymin
 img2 = np.zeros((im2ly,im2lx,3), np.uint8) 
 
-for ligne in range(0, 32) :
-	for colonne in range(0, 54) :
+for ligne in range(0, nby) :
+	for colonne in range(0, nbx) :
 		#calcul 1er carre
 		#B V R
 		sb=0
@@ -163,7 +165,7 @@ cv2.createTrackbar('sh','image',0,255,nothing)
 cv2.createTrackbar('vh','image',0,255,nothing)
 
 cv2.setTrackbarPos('hl','image',0)
-cv2.setTrackbarPos('sl','image',0) 
+cv2.setTrackbarPos('sl','image',0)
 cv2.setTrackbarPos('vl','image',0)
 cv2.setTrackbarPos('hh','image',255)
 cv2.setTrackbarPos('sh','image',255)
@@ -190,7 +192,7 @@ while(1):
     res = cv2.bitwise_and(img2,img2, mask= thrImg)
     cv2.imshow('image',res)
 
-cv2.imwrite('step5.png',img)
-cv2.imwrite('step6.png',img2)
-cv2.imwrite('step7.png',imgorig)
+cv2.imwrite('pstep5.png',img)
+cv2.imwrite('pstep6.png',img2)
+cv2.imwrite('pstep7.png',imgorig)
 cv2.destroyAllWindows()
