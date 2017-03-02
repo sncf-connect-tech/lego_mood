@@ -64,6 +64,7 @@ android {
 TODO :
 - Load an existing image for mood
 - Border detecting
-- Perspective Transformation
 - Auto colors calibration
-
+- Save configuration
+- Show result
+- Send result via REST API

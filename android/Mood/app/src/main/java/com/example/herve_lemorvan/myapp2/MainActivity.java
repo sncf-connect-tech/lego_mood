@@ -15,8 +15,10 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -87,14 +89,14 @@ public class MainActivity extends AppCompatActivity {
     private final Scalar lower_blue =  new Scalar(2,131,68);
     private final Scalar upper_blue = new Scalar(10,211,115);
 
-    private final Scalar lower_red = new Scalar(115,209,94);
-    private final Scalar upper_red = new Scalar(124,255,154);
+    private final Scalar lower_red = new Scalar(82,167,85);
+    private final Scalar upper_red = new Scalar(193,240,154);
 
-    private final Scalar lower_green = new Scalar(45,124,35);
-    private final Scalar upper_green = new Scalar(78,240,74);
+    private final Scalar lower_green = new Scalar(40,90,51);
+    private final Scalar upper_green = new Scalar(82,245,102);
 
-    private final Scalar lower_orange = new Scalar(112,215,150);
-    private final Scalar upper_orange = new Scalar(120,234,191);
+    private final Scalar lower_orange = new Scalar(88,131,188);
+    private final Scalar upper_orange = new Scalar(141,242,224);
 
     private final Scalar lower_pink = new Scalar(120,133,149);
     private final Scalar upper_pink = new Scalar(132,149,198);
@@ -166,6 +168,9 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
+    private int activite[][]=new int[5][15];
+    private MyColor coul[][];
+
 
     public void helloworld() {
 
@@ -183,33 +188,50 @@ public class MainActivity extends AppCompatActivity {
         satTextMax.setText("Saturation max: " + progressSatMax);
         valTextMax.setText("Value max: " + progressValMax);
 
-
         lower_grey = new Scalar(progressHueMin,progressSatMin,progressValMin);
         upper_grey = new Scalar(progressHueMax,progressSatMax,progressValMax);
 
-        int xmin=0;
-        int xmax=924;
-        int ymin=58;
-        int ymax=602;
 
-        int nbx=54;
-        int nby=32;
-
-        float dx=(float)(xmax-xmin)/(float)(nbx);
-        float dy=(float)(ymax-ymin)/(float)(nby);
 
         Mat cokeBGR = null;
         try {
-            cokeBGR = Utils.loadResource(MainActivity.this, R.drawable.step3, Imgcodecs.IMREAD_COLOR);
+            cokeBGR = Utils.loadResource(MainActivity.this, R.drawable.step21, Imgcodecs.IMREAD_COLOR);
         } catch (IOException e) {
             e.printStackTrace();
         }
         Mat cokeRGBA = new Mat();
         Imgproc.cvtColor(cokeBGR, cokeRGBA, Imgproc.COLOR_BGR2RGBA);
 
+        //First get four quadrilinear points in source image
+        //        Mat srcImage = Imgcodecs.imread("input.png");
+        Mat srcImage = cokeRGBA;
+        Mat destImage = new Mat(600, 640, srcImage.type());
+        Mat src = new MatOfPoint2f(new Point(96, 204), new Point(517, 288),new Point(429, 648), new Point(51, 576));
+//        Mat dst = new MatOfPoint2f(new Point(0, 0), new Point(destImage.width() - 1, 0), new Point(destImage.width() - 1, destImage.height() - 1), new Point(0, destImage.height() - 1));
+        Mat dst = new MatOfPoint2f(new Point(0, 0), new Point(639, 0), new Point(639, 599), new Point(0, 599));
+
+        //Getting transformation metrix
+        Mat transform = Imgproc.getPerspectiveTransform(src, dst);
+        Imgproc.warpPerspective(srcImage, destImage, transform, destImage.size());
+        //you will get transformed straighten image.
+
+        cokeRGBA=destImage;
+
+        int xmin=0;
+        int xmax=cokeRGBA.cols();
+        int ymin=0;
+        int ymax=cokeRGBA.rows();
+
+        int nbx=32;
+        int nby=30;
+        coul=new MyColor[nbx][nby];
+
+        float dx=(float)(xmax-xmin)/(float)(nbx);
+        float dy=(float)(ymax-ymin)/(float)(nby);
         //Moyenner
         int im2lx=xmax-xmin;
         int im2ly=ymax-ymin;
+
 
         Mat mImg2 = Mat.zeros(ymax,xmax, CvType.CV_8UC3);
 
@@ -249,30 +271,31 @@ public class MainActivity extends AppCompatActivity {
                 Scalar colorBGR=new Scalar(sb, sv, sr);
                 Scalar colorRGB=new Scalar(sr, sv, sb);
 
-                Imgproc.rectangle(mImg2,new Point(x1+xmin,y1+ymin),new Point(x2+xmin, y2+ymin), colorBGR,Core.FILLED);
+//                Imgproc.rectangle(mImg2,new Point(x1+xmin,y1+ymin),new Point(x2+xmin, y2+ymin), colorBGR,Core.FILLED);
 
                 MyColor col=detectColor(colorRGB);
 
+                coul[colonne][ligne]=col;
 
                 switch(col) {
                     case BLUE:
-                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
+//                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
                         Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(0, 0, 255), 4);
                         break;
                     case RED:
-                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
+//                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
                         Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 0, 0), 4);
                         break;
                     case GREEN:
-                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
+//                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
                         Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(0, 255, 0), 4);
                         break;
                     case ORANGE:
-                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
+//                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
                         Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 140, 0), 4);
                         break;
                     case PINK:
-                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
+//                        Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(255, 255, 255), Core.FILLED);
                         Imgproc.rectangle(mImg2, new Point(x1+xmin, y1+ymin), new Point(x2+xmin, y2+ymin), new Scalar(140, 0, 255), 2);
                         break;
 
@@ -288,11 +311,52 @@ public class MainActivity extends AppCompatActivity {
         Imgproc.cvtColor(cokeBGR, hsv, Imgproc.COLOR_BGR2HSV,0);
         cokeRGBA=mImg2;
 
+        for (int ligne=0; ligne<nby; ligne++) { //32
+            Point pt1=new Point(0,ligne*dy);
+            Point pt2=new Point(xmax,ligne*dy);
+            Scalar coul=new Scalar(255, 255, 255);
+            Imgproc.line(cokeRGBA, pt1, pt2, coul);
+        }
+        for (int colonne=0; colonne<nbx; colonne++) { //32
+            Point pt1=new Point(colonne*dx,0);
+            Point pt2=new Point(colonne*dx,ymax);
+            Scalar coul=new Scalar(255, 255, 255);
+            Imgproc.line(cokeRGBA, pt1, pt2, coul);
+        }
+
         Bitmap bm = Bitmap.createBitmap(cokeRGBA.cols(), cokeRGBA.rows(),Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(cokeRGBA, bm);
 
 
         ImageView iv = (ImageView) findViewById(R.id.imageView1);
         iv.setImageBitmap(bm);
+
+        int colPers1=3;
+        int colPers2=7;
+        int colPers3=13;
+        int colPers4=17;
+        int colPers5=21;
+        int colPers6=25;
+        int colPers7=29;
+
+        System.out.println("calculs...");
+
+        for (int ligne=0; ligne<nby; ligne++) {
+            if (coul[colPers2][ligne]==MyColor.RED) {
+                System.out.println("Pers 2 absente demie journée "+ligne);
+            }
+            if (coul[colPers2][ligne]==MyColor.ORANGE) {
+                System.out.println("Pers 2 occupée demie journée "+ligne);
+            }
+        }
+        for (int ligne=0; ligne<nby; ligne++) {
+            if (coul[colPers6][ligne]==MyColor.RED) {
+                System.out.println("Pers 6 absente demie journée "+ligne);
+            }
+            if (coul[colPers6][ligne]==MyColor.ORANGE) {
+                System.out.println("Pers 6 occupée demie journée "+ligne);
+            }
+        }
+
     }
 }
