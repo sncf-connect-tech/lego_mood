@@ -90,11 +90,16 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int lower_grey_h_min = Integer.parseInt(sharedPref.getString("lower_grey_h_min",""));
         int lower_grey_h_max = Integer.parseInt(sharedPref.getString("lower_grey_h_max",""));
-
-        System.out.println("lower_grey_h_min="+lower_grey_h_min);
-        System.out.println("lower_grey_h_max="+lower_grey_h_max);
+        int lower_grey_s_min = Integer.parseInt(sharedPref.getString("lower_grey_s_min",""));
+        int lower_grey_s_max = Integer.parseInt(sharedPref.getString("lower_grey_s_max",""));
+        int lower_grey_v_min = Integer.parseInt(sharedPref.getString("lower_grey_v_min",""));
+        int lower_grey_v_max = Integer.parseInt(sharedPref.getString("lower_grey_v_max",""));
         hueBarMin.setProgress(lower_grey_h_min*2);
         hueBarMax.setProgress(lower_grey_h_max*2);
+        satBarMin.setProgress(lower_grey_s_min*2);
+        satBarMax.setProgress(lower_grey_s_max*2);
+        valBarMin.setProgress(lower_grey_v_min*2);
+        valBarMax.setProgress(lower_grey_v_max*2);
 
     }
 
@@ -147,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         Mat hsv = Mat.zeros(1,1,CvType.CV_8UC3);
         Imgproc.cvtColor(color, hsv, Imgproc.COLOR_RGB2HSV,0);
         double[] hsv2=hsv.get(0,0);
-        System.out.println(hsv2);
+        //System.out.println(hsv2);
 
         Mat color2 = Mat.zeros(1,1,CvType.CV_8UC3);
 
@@ -212,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor edit = prefs.edit();
         edit.putString(valueKey, value);
         edit.commit();
+        System.out.println("save:"+valueKey+"="+value);
     }
 
     public void helloworld() {
@@ -227,6 +233,16 @@ public class MainActivity extends AppCompatActivity {
         String lower_grey_h_max=""+progressHueMax;
         save("lower_grey_h_min",lower_grey_h_min);
         save("lower_grey_h_max",lower_grey_h_max);
+
+        String lower_grey_s_min=""+progressSatMin;
+        String lower_grey_s_max=""+progressSatMax;
+        save("lower_grey_s_min",lower_grey_s_min);
+        save("lower_grey_s_max",lower_grey_s_max);
+
+        String lower_grey_v_min=""+progressValMin;
+        String lower_grey_v_max=""+progressValMax;
+        save("lower_grey_v_min",lower_grey_v_min);
+        save("lower_grey_v_max",lower_grey_v_max);
 
         hueTextMin.setText("Hue min: " + progressHueMin);
         satTextMin.setText("Saturation min: " + progressSatMin);
@@ -318,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
                 Scalar colorBGR=new Scalar(sb, sv, sr);
                 Scalar colorRGB=new Scalar(sr, sv, sb);
 
-//                Imgproc.rectangle(mImg2,new Point(x1+xmin,y1+ymin),new Point(x2+xmin, y2+ymin), colorBGR,Core.FILLED);
+                Imgproc.rectangle(mImg2,new Point(x1+xmin,y1+ymin),new Point(x2+xmin, y2+ymin), colorBGR,Core.FILLED);
 
                 MyColor col=detectColor(colorRGB);
 
