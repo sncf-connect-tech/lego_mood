@@ -1,9 +1,13 @@
 package com.example.herve_lemorvan.myapp1;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -18,7 +22,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -28,6 +31,28 @@ import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_new_thingy:
+                //Toast.makeText(this, "ADD!", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(this, com.example.herve_lemorvan.myapp1.MyPreferencesActivity.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     private enum MyColor {BLUE,RED,GREEN,ORANGE,PINK,GREY,UNKNOWN};
 
@@ -61,6 +86,16 @@ public class MainActivity extends AppCompatActivity {
         hueBarMax.setOnSeekBarChangeListener(seekBarChangeListener);
         satBarMax.setOnSeekBarChangeListener(seekBarChangeListener);
         valBarMax.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        int lower_grey_h_min = Integer.parseInt(sharedPref.getString("lower_grey_h_min",""));
+        int lower_grey_h_max = Integer.parseInt(sharedPref.getString("lower_grey_h_max",""));
+
+        System.out.println("lower_grey_h_min="+lower_grey_h_min);
+        System.out.println("lower_grey_h_max="+lower_grey_h_max);
+        hueBarMin.setProgress(lower_grey_h_min*2);
+        hueBarMax.setProgress(lower_grey_h_max*2);
+
     }
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -172,6 +207,13 @@ public class MainActivity extends AppCompatActivity {
     private MyColor coul[][];
 
 
+    public void save(String valueKey, String value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString(valueKey, value);
+        edit.commit();
+    }
+
     public void helloworld() {
 
         int progressHueMin = hueBarMin.getProgress()/2;
@@ -180,6 +222,11 @@ public class MainActivity extends AppCompatActivity {
         int progressHueMax = hueBarMax.getProgress()/2;
         int progressSatMax = satBarMax.getProgress()/2;
         int progressValMax = valBarMax.getProgress()/2;
+
+        String lower_grey_h_min=""+progressHueMin;
+        String lower_grey_h_max=""+progressHueMax;
+        save("lower_grey_h_min",lower_grey_h_min);
+        save("lower_grey_h_max",lower_grey_h_max);
 
         hueTextMin.setText("Hue min: " + progressHueMin);
         satTextMin.setText("Saturation min: " + progressSatMin);
